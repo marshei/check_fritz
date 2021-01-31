@@ -24,9 +24,11 @@ func CheckDownstreamMax(aI ArgumentInformation) {
 	}
 
 	if isDSL {
-		soapReq = fritz.CreateNewSoapData(*aI.Username, *aI.Password, *aI.Hostname, *aI.Port, "/upnp/control/wandslifconfig1", "WANDSLInterfaceConfig", "GetInfo")
+		soapReq = fritz.CreateNewSoapData(*aI.Username, *aI.Password, *aI.Hostname, *aI.Port, "/igdupnp/control/WANCommonIFC1",
+		            "urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1", "GetCommonLinkProperties")
 	} else {
-		soapReq = fritz.CreateNewSoapData(*aI.Username, *aI.Password, *aI.Hostname, *aI.Port, "/upnp/control/wancommonifconfig1", "WANCommonInterfaceConfig", "GetCommonLinkProperties")
+		soapReq = fritz.CreateNewSoapData(*aI.Username, *aI.Password, *aI.Hostname, *aI.Port, "/upnp/control/wancommonifconfig1",
+		            "WANCommonInterfaceConfig", "GetCommonLinkProperties")
 	}
 
 	go fritz.DoSoapRequest(&soapReq, resps, errs, aI.Debug)
@@ -40,37 +42,20 @@ func CheckDownstreamMax(aI ArgumentInformation) {
 
 	var downstream float64
 
-	if isDSL {
-		soapResp := fritz.WANDSLInterfaceGetInfoResponse{}
-		err = fritz.UnmarshalSoapResponse(&soapResp, res)
+  soapResp := fritz.WANCommonInterfaceCommonLinkPropertiesResponse{}
+  err = fritz.UnmarshalSoapResponse(&soapResp, res)
 
-		if err != nil {
-			panic(err)
-		}
+  if err != nil {
+    panic(err)
+  }
 
-		ups, err := strconv.ParseFloat(soapResp.NewDownstreamCurrRate, 64)
+  ups, err := strconv.ParseFloat(soapResp.NewLayer1DownstreamMaxBitRate, 64)
 
-		if err != nil {
-			panic(err)
-		}
+  if err != nil {
+    panic(err)
+  }
 
-		downstream = ups / 1000
-	} else {
-		soapResp := fritz.WANCommonInterfaceCommonLinkPropertiesResponse{}
-		err = fritz.UnmarshalSoapResponse(&soapResp, res)
-
-		if err != nil {
-			panic(err)
-		}
-
-		ups, err := strconv.ParseFloat(soapResp.NewLayer1DownstreamMaxBitRate, 64)
-
-		if err != nil {
-			panic(err)
-		}
-
-		downstream = ups / 1000000
-	}
+  downstream = ups / 1000000
 
 	perfData := perfdata.CreatePerformanceData("downstream_max", downstream, "")
 
