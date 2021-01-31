@@ -7,14 +7,24 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 )
 
 // DoSoapRequest does two request to authenticate and handle the SOAP request
 func DoSoapRequest(soapRequest *SoapData, resps chan<- []byte, errs chan<- error, debug bool) {
+
+	// enable this for debug sessions
+	if debug {
+		fmt.Printf("---\nSOAP Request:\n")
+		fmt.Printf("-> URL    : %v\n", string(soapRequest.URL))
+		fmt.Printf("-> Service: %v\n", string(soapRequest.Service))
+		fmt.Printf("-> Action : %v\n---\n", string(soapRequest.Action))
+	}
+
 	soapClient := createNewSoapClient()
 
 	// prepare first request
-	req, err := newSoapRequest(soapRequest)
+	req, err := newSoapRequest(soapRequest, debug)
 
 	if err != nil {
 		errs <- err
@@ -39,11 +49,11 @@ func DoSoapRequest(soapRequest *SoapData, resps chan<- []byte, errs chan<- error
 
 	// enable this for debug sessions
 	if debug {
-		fmt.Printf("---\nFrist SOAP Response:\n---\n%v\n---\n", string(body))
+		fmt.Printf("---\nFirst SOAP Response:\n---\n%v\n---\n", string(body))
 	}
 
 	// create immediately a new request with authentication
-	req, err = newSoapRequest(soapRequest)
+	req, err = newSoapRequest(soapRequest, debug)
 
 	if err != nil {
 		errs <- err
@@ -111,26 +121,34 @@ func createNewSoapClient() *http.Client {
 	return &http.Client{Transport: ht}
 }
 
-func newSoapRequest(soapRequest *SoapData) (*http.Request, error) {
-	requestBody := newSoapRequestBody(soapRequest)
+func newSoapRequest(soapRequest *SoapData, debug bool) (*http.Request, error) {
+	requestBody := newSoapRequestBody(soapRequest, debug)
 	req, err := http.NewRequest("POST", soapRequest.URL, bytes.NewBuffer(requestBody))
 
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("Content-Type", "text/xml; charset='utf-8'")
-	req.Header.Set("SoapAction", "urn:dslforum-org:service:"+soapRequest.Service+":1#"+soapRequest.Action)
+	if (strings.HasPrefix(soapRequest.Service, "urn")) {
+	  req.Header.Set("SoapAction", soapRequest.Service+"#"+soapRequest.Action)
+	} else {
+	  req.Header.Set("SoapAction", "urn:dslforum-org:service:"+soapRequest.Service+":1#"+soapRequest.Action)
+	}
 
 	return req, nil
 }
 
-func newSoapRequestBody(soapRequest *SoapData) []byte {
+func newSoapRequestBody(soapRequest *SoapData, debug bool) []byte {
 	var request bytes.Buffer
 
 	request.WriteString("<?xml version='1.0?>")
 	request.WriteString("<s:Envelope xmlns:s='http://schemas.xmlsoap.org/soap/envelope/' s:encodingStyle='http://schemas.xmlsoap.org/soap/encoding/'>")
 	request.WriteString("<s:Body>")
-	request.WriteString("<u:" + soapRequest.Action + " xmlns:u='urn:dslforum-org:service:" + soapRequest.Service + ":1'>")
+	if (strings.HasPrefix(soapRequest.Service, "urn")) {
+	  request.WriteString("<u:" + soapRequest.Action + " xmlns:u='" + soapRequest.Service + "'>")
+	} else {
+	  request.WriteString("<u:" + soapRequest.Action + " xmlns:u='urn:dslforum-org:service:" + soapRequest.Service + ":1'>")
+	}
 
 	if &soapRequest.XMLVariable != nil {
 		request.WriteString("<" + soapRequest.XMLVariable.Name + ">")
@@ -142,5 +160,8 @@ func newSoapRequestBody(soapRequest *SoapData) []byte {
 	request.WriteString("</s:Body>")
 	request.WriteString("</s:Envelope>")
 
+	if debug {
+    fmt.Printf("---\nSOAP Request Body:\n---\n%v\n---\n", request.String())
+	}
 	return request.Bytes()
 }
