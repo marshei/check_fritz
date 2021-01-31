@@ -172,6 +172,28 @@ type WANCommonInterfaceCommonLinkPropertiesResponse struct {
 	NewPhysicalLinkStatus         string `xml:"Body>GetCommonLinkPropertiesResponse>NewPhysicalLinkStatus"`
 }
 
+// WANCommonInterfaceAddonInfoResponse is the date structure for responses from GetAddonInfo
+type WANCommonInterfaceAddonInfoResponse struct {
+	TR064Response
+	NewByteSendRate                   string `xml:"Body>GetAddonInfosResponse>NewByteSendRate"`
+	NewByteReceiveRate                string `xml:"Body>GetAddonInfosResponse>NewByteReceiveRate"`
+	NewPacketSendRate                 string `xml:"Body>GetAddonInfosResponse>NewPacketSendRate"`
+	NewPacketReceiveRate              string `xml:"Body>GetAddonInfosResponse>NewPacketReceiveRate"`
+	NewTotalBytesSent                 string `xml:"Body>GetAddonInfosResponse>NewTotalBytesSent"`
+	NewTotalBytesReceived             string `xml:"Body>GetAddonInfosResponse>NewTotalBytesReceived"`
+	NewAutoDisconnectTime             string `xml:"Body>GetAddonInfosResponse>NewAutoDisconnectTime"`
+	NewIdleDisconnectTime             string `xml:"Body>GetAddonInfosResponse>NewIdleDisconnectTime"`
+	NewDNSServer1                     string `xml:"Body>GetAddonInfosResponse>NewDNSServer1"`
+	NewDNSServer2                     string `xml:"Body>GetAddonInfosResponse>NewDNSServer2"`
+	NewVoipDNSServer1                 string `xml:"Body>GetAddonInfosResponse>NewVoipDNSServer1"`
+	NewVoipDNSServer2                 string `xml:"Body>GetAddonInfosResponse>NewVoipDNSServer2"`
+	NewUpnpControlEnabled             string `xml:"Body>GetAddonInfosResponse>NewUpnpControlEnabled"`
+	NewRoutedBridgedModeBoth          string `xml:"Body>GetAddonInfosResponse>NewRoutedBridgedModeBoth"`
+	NewX_AVM_DE_TotalBytesSent64      string `xml:"Body>GetAddonInfosResponse>NewX_AVM_DE_TotalBytesSent64"`
+	NewX_AVM_DE_TotalBytesReceived64  string `xml:"Body>GetAddonInfosResponse>NewX_AVM_DE_TotalBytesReceived64"`
+	NewX_AVM_DE_WANAccessType         string `xml:"Body>GetAddonInfosResponse>NewX_AVM_DE_WANAccessType"`
+}
+
 // WANDSLInterfaceGetInfoResponse is the date structure for responses from GetInfo
 type WANDSLInterfaceGetInfoResponse struct {
 	TR064Response

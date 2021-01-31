@@ -48,5 +48,10 @@ func (pd *PerformanceData) SetMaximum(Maximum float64) {
 
 // GetPerformanceDataAsString returns a PerformanceData object as formatted string
 func (pd *PerformanceData) GetPerformanceDataAsString() string {
-	return fmt.Sprintf("| '%s'=%f%s;%s;%s;%s;%s", pd.Label, pd.Value, pd.UOM, pd.Warning, pd.Critical, pd.Minimum, pd.Maximum)
+	return fmt.Sprintf("| %s", pd.GetPerformanceDataAsStringWithoutSeparator())
+}
+
+// GetPerformanceDataAsStringWithoutSeparator returns a PerformanceData object as formatted string without a separator
+func (pd *PerformanceData) GetPerformanceDataAsStringWithoutSeparator() string {
+	return fmt.Sprintf("'%s'=%f%s;%s;%s;%s;%s", pd.Label, pd.Value, pd.UOM, pd.Warning, pd.Critical, pd.Minimum, pd.Maximum)
 }

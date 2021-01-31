@@ -86,6 +86,7 @@ Ensure that you also set the executable bit with `chmod +x check_fritz`.
 |--------------------------|-----------------------------------------------------------------------------|
 | `connection_status`      | WAN connection status.                                                      |
 | `connection_uptime`      | WAN connection uptime in seconds.                                           |
+| `connection_totals`      | WAN connection counter of received and sent bytes.                          |
 | `device_uptime`          | Device uptime in seconds.                                                   |
 | `device_update`          | Update state.                                                               |
 | `downstream_max`         | Maximum downstream.                                                         |

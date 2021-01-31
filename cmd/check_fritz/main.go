@@ -179,6 +179,8 @@ func checkMain(c *cli.Context) error {
 		CheckSpecificSmartSocketEnergy(argInfo)
 	case "smart_status":
 		CheckSpecificSmartStatus(argInfo)
+	case "connection_totals":
+	  CheckTotals(argInfo)
 	default:
 		fmt.Println("Unknown method.")
 		GlobalReturnCode = exitUnknown
